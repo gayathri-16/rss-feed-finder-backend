@@ -2,7 +2,7 @@ require('dotenv').config();
 const cheerio = require('cheerio');
 
 const categories = {
-    "E-Commerce": ['shopping','online shopping','online', 'buy', 'e-commerce', 'store', 'product', 'sale'],
+    "E-Commerce": ['shopping', 'online shopping', 'online', 'buy', 'e-commerce', 'store', 'product', 'sale'],
     "Education": ['learning', 'education', 'university', 'course', 'study', 'e-learning', 'online courses', 'degrees', 'certificate programs', 'skills', 'ai', 'ml', 'data science', 'cloud computing', 'pg programs', 'digital marketing'],
     "Technology": ['technology', 'tech', 'gadgets', 'innovation', 'software', 'hardware'],
     "Social Media": ['social media', 'community', 'network', 'platform', 'interaction'],
@@ -55,19 +55,24 @@ const extractThumbnail = ($) => {
     return firstImage || null;  // Return null if no image is found
 };
 
-const fetchAndCategorize = async (url) => {
+exports.fetchAndCategorize = async (req, res) => {
     try {
-        const response = await fetch(url);
+        const { url } = req.body;
+        console.log('Received URL:', url); // Log the received URL
 
+        if (!url) {
+            return res.status(400).json({ error: 'URL is required' });
+        }
+
+        const response = await fetch(url);
         if (!response.ok) {
-            throw new Error('Failed to fetch the webpage.');
+            throw new Error(`Failed to fetch the webpage: ${response.statusText}`);
         }
 
         const html = await response.text();
         const $ = cheerio.load(html);
         const metaTags = [];
 
-        // Extract meta tag information
         $('meta').each((index, element) => {
             const name = $(element).attr('name');
             const property = $(element).attr('property');
@@ -77,18 +82,20 @@ const fetchAndCategorize = async (url) => {
             }
         });
 
-        // Dynamically categorize the website based on meta tag content
         const category = categorizeWebsite(metaTags);
-
-        // Extract the thumbnail image
         const thumbnail = extractThumbnail($);
 
-        console.log(`The website "${url}" is categorized as: ${category}`);
-        console.log(`Thumbnail image URL: ${thumbnail || "No thumbnail found"}`);
+        res.json({
+            url,
+            category,
+            thumbnail: thumbnail || "No thumbnail found"
+        });
     } catch (err) {
-        console.error('Error:', err);
+        console.error('Error:', err.message); // Log the error
+        res.status(500).json({ error: err.message });
     }
 };
 
-const url = process.env.API_URL;
-fetchAndCategorize(url);
+exports.greetMsg = async(req,res)=>{
+    res.json('Hello guys')
+}

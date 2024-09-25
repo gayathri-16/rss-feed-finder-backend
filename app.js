@@ -14,7 +14,7 @@ app.use((req,res,next)=>{
 })
 
 // Import routes
-const apiRoutes = require('./routes/api');
+const apiRoutes = require('./api/api');
 app.use('', apiRoutes);
 
 module.exports = app;
