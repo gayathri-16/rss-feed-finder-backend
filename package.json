@@ -13,11 +13,13 @@
   },
   "name": "api-targetting",
   "version": "1.0.0",
-  "main": "Apitarget.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js"
-  },
+  "main": "server.js",
+"scripts": {
+  "test": "echo \"Error: no test specified\" && exit 1",
+  "build": "echo 'No build step'",
+  "start": "node server.js"
+},
+
   "author": "",
   "license": "ISC",
   "description": ""
