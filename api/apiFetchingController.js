@@ -54,7 +54,10 @@ const extractThumbnail = ($) => {
     const firstImage = $('img').first().attr('src');
     return firstImage || null;  // Return null if no image is found
 };
-
+const findRSSFeed = ($) => {
+    const rssLink = $('link[type="application/rss+xml"]').attr('href');
+    return rssLink || null; // Return the RSS feed URL or null if not found
+};
 exports.fetchAndCategorize = async (req, res) => {
     try {
         const { url } = req.body;
@@ -84,11 +87,14 @@ exports.fetchAndCategorize = async (req, res) => {
 
         const category = categorizeWebsite(metaTags);
         const thumbnail = extractThumbnail($);
+        const rssFeed = findRSSFeed($); 
 
         res.json({
             url,
             category,
-            thumbnail: thumbnail || "No thumbnail found"
+            thumbnail: thumbnail || "No thumbnail found",
+            rssFeed: rssFeed || "No RSS-feed found"
+
         });
     } catch (err) {
         console.error('Error:', err.message); // Log the error
